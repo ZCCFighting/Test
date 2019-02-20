@@ -3,19 +3,7 @@ import numpy as np
 
 class piecture_theord():
     #全局阈值
-    def __init__(self):
-        filename='22.png'
-        filena=str(filename.split('.')[0])
-        print(filena)
 
-        src = cv.imread(filename)
-        cv.namedWindow('input_image', cv.WINDOW_NORMAL) #设置为WINDOW_NORMAL可以任意缩放
-        cv.imshow('input_image', src)
-        self.threshold_demo(src,filena)
-        #local_threshold(src,filena)
-        #custom_threshold(src,filena)
-        cv.waitKey(1000)
-        cv.destroyAllWindows()
 
     def threshold_demo(self,image,filena):
         gray = cv.cvtColor(image, cv.COLOR_RGB2GRAY)  #把输入图像灰度化
@@ -59,8 +47,19 @@ class piecture_theord():
         cv.imwrite(filena+'binary2.tif',binary)
 
 
-if __name__ == '__main__':
-    test=piecture_theord()
+def pic_the():
+    filename='image/22.png'
+    filena=str(filename.split('.')[0])
+    print(filena)
+
+    src = cv.imread(filename)
+    cv.namedWindow('input_image', cv.WINDOW_NORMAL) #设置为WINDOW_NORMAL可以任意缩放
+    cv.imshow('input_image', src)
+    self.threshold_demo(src,filena)
+    #local_threshold(src,filena)
+    #custom_threshold(src,filena)
+    cv.waitKey(1000)
+    cv.destroyAllWindows()
 #     filename='22.png'
 #     filena=str(filename.split('.')[0])
 #     print(filena)

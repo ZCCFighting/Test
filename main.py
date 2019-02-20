@@ -1,3 +1,6 @@
+# -*- coding: UTF-8 -*-
+#@author:zhucongcong
+#creat time:2019/02/19
 import sys 
 from PyQt5.QtWidgets import QApplication,QWidget,QPushButton,QToolTip,QMessageBox,QFileDialog
 from PyQt5.QtGui import QIcon,QFont,QPixmap
@@ -5,7 +8,7 @@ from PyQt5.QtCore import QCoreApplication
 from PyQt5 import QtCore,QtGui,QtWidgets
 import cv2
 import os
-from theord import *
+from theord import piecture_theord
 import gdal 
 #pyqt5 时间处理系统由信号和槽机制建立 注意QCoreAppli类由QApplication创建
 class Example(QWidget):
@@ -20,14 +23,14 @@ class Example(QWidget):
 		self.x =0
 		self.picflag=0 #判断label_img中是否存在图片
 		self.show()
-
+		self.frame=""
 
 	def initUI(self):
 		# QToolTip.setFont(QFont('SansSerif',10))
 		# self.setToolTip('this is a <b>QPushButton</b> widget')
 		self.qbtn=QPushButton('打开相机',self)
 		# self.qbtn.setStyleSheet('QPushButton{border-image:url(MMC.png)}')  #button按钮背景颜色
-		self.qbtn.setIcon(QIcon('MMC.png'))
+		self.qbtn.setIcon(QIcon('image/MMC.png'))
 		#点击信号连接到quit()方法，将结束应用。事件通信在两个对象之间进行：发送者和接受者。发送者是按钮，接受者是应用对象。
 		self.qbtn.resize(100,60)
 		self.qbtn.move(0,0)#在widget中显示的位置
@@ -60,16 +63,30 @@ class Example(QWidget):
 
 		self.setGeometry(300,200,1500,800)#将窗口在屏幕上显示，设置尺寸resize 和move融合
 		self.setWindowTitle('Icon')
-		self.setWindowIcon(QIcon('MMC.png'))
+		self.setWindowIcon(QIcon('image/MMC.png'))
+
+
 
 	def solt_init(self):
 		self.qbtn.clicked.connect(self.button_open_camera_click)
 		self.cbtn.clicked.connect(self.close)
 		self.timer_camera.timeout.connect(self.show_camera)
-		#self.pbtn.clicked.connect(self.picture_theord)
+		self.pbtn.clicked.connect(self.picture_theord)
 		self.obtn.clicked.connect(self.loadFile)
 
-	#def picture_theord(self):
+	def picture_theord(self):
+		filename=self.frame  #'image/22.png'
+		filena=str(filename.split('.')[0])
+		print(filena)
+		src = cv2.imread(filename)
+		cv2.namedWindow('input_image', cv2.WINDOW_NORMAL) #设置为WINDOW_NORMAL可以任意缩放
+		cv2.imshow('input_image', src)
+		pic_thea=piecture_theord()#需要创建piecture_theord类的实例化对象
+		pic_thea.threshold_demo(src,filena)
+		#local_threshold(src,filena)
+		#custom_threshold(src,filena)
+		cv2.waitKey(1000)
+		cv2.destroyAllWindows()
 
 		
 
@@ -99,11 +116,13 @@ class Example(QWidget):
 		show = cv2.cvtColor(show, cv2.COLOR_BGR2RGB)
 		showImage = QtGui.QImage(show.data, show.shape[1], show.shape[0], QtGui.QImage.Format_RGB888)
 		self.label_show_camera.setPixmap(QtGui.QPixmap.fromImage(showImage))
+	
 	def loadFile(self):
 		if self.picflag==0:
 			print("load--file")
 			fname, _ = QFileDialog.getOpenFileName(self, '选择图片', 'c:\\', 'Image files(*.jpg *.gif *.png *.tif *.tiff)')
 			self.frame=fname
+			print(fname)
 			self.lable_show_img.setPixmap(QPixmap(self.frame))
 			self.lable_show_img.setScaledContents(True) #图片自适应label大小
 			self.obtn.setText(u'清除图片')
@@ -125,7 +144,7 @@ class Example(QWidget):
 		if msg.exec_() == QMessageBox.RejectRole:
 			event.ignore()
 		else:
-            #             self.socket_client.send_command(self.socket_client.current_user_command)
+			#self.socket_client.send_command(self.socket_client.current_user_command)
 			if self.cap.isOpened():
 				self.cap.release()
 			if self.timer_camera.isActive():
